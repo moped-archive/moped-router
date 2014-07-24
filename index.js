@@ -7,10 +7,30 @@ var Route = require('./lib/route.js');
 module.exports = App;
 function App() {
   this.handlers = [];
+  this.mountHandlers = [];
+  this.basepath = null;
+  this.parent = null;
 }
 App.prototype._mount = function (basepath, parent) {
+  if (this.mountHandlers === null) {
+    throw new Error('Cannot mount the same app a second time.');
+  }
   this.basepath = basepath;
   this.parent = parent;
+  this.mountHandlers.forEach(function (handler) {
+    handler.call(this, basepath, parent);
+  }.bind(this));
+  this.mountHandlers = null;
+};
+
+App.prototype.onMount = function (handler) {
+  if (typeof handler !== 'function') {
+    throw new TypeError('app.onMount expects a function but got ' + (typeof handler));
+  }
+  if (this.mountHandlers === null) {
+    throw new Error('Cannot call app.onMount after the app has been mounted.');
+  }
+  this.mountHandlers.push(handler);
 };
 
 App.prototype.use = function (path, child) {

@@ -1,5 +1,6 @@
 'use strict';
 
+var assert = require('assert');
 var db = require('./db');
 var MopedRouter = require('../../');
 var app = new MopedRouter();
@@ -26,6 +27,12 @@ app.get('/:car', function (req) {
 // authenticated user
 app.post('/write-car', function (req, id, update) {
   return db.cars.update({_id: id}, update, {upsert: true});
+});
+
+
+app.onMount(function (basepath, parent) {
+  assert(basepath === app.basepath);
+  assert(parent === app.parent);
 });
 
 module.exports = app;
