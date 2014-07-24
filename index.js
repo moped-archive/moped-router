@@ -34,7 +34,7 @@ App.prototype.onMount = function (handler) {
 };
 
 App.prototype.use = function (path, child) {
-  if (arguments.length === 0) {
+  if (arguments.length === 1) {
     child = path;
     path = '/';
   }
@@ -54,7 +54,7 @@ App.prototype.use = function (path, child) {
 
 function mounter(type) {
   return function (path, handler) {
-    if (arguments.length === 0) {
+    if (arguments.length === 1) {
       handler = path;
       path = '*';
     }

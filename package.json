@@ -1,6 +1,6 @@
 {
   "name": "moped-router",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Router for a moped application",
   "keywords": [],
   "dependencies": {
