@@ -14,7 +14,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/ForbesLindesay/moped-router.git"
+    "url": "https://github.com/mopedjs/moped-router.git"
   },
   "author": "ForbesLindesay",
   "license": "MIT"
