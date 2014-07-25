@@ -90,13 +90,17 @@ subapp.onMount(function (basepath, parent) {
 });
 ```
 
-### app.async(path?, handler)
+### app.async(path?, handler) / app.first(path?, handler)
 
 Registers an asynchronous handler (i.e. one that may return a promise).  This is only run when making "asynchronous" requests.  You can use these to initialize any state that is needed for the application to run.  Note that in moped these are called for every server request and just the first client request.
 
-### app.get(path?, handler)
+This has two aliases that do the same thing, to help you express intent.
+
+### app.get(path?, handler) / app.sync(path?, handler) / app.every(path?, handler)
 
 Registers a synchronous handler.  This is where the bulk of your application happens.  These are run on every request, and are only allowed to be synchronous (to ensure react can re-render the view synchronously).
+
+This has three aliases that do the same thing, to help you express intent.
 
 ### app.post(path? handler)
 

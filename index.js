@@ -67,8 +67,8 @@ function mounter(type) {
     this.handlers.push(new Route(type, path, handler));
   };
 }
-App.prototype.async = mounter('async');
-App.prototype.get = mounter('sync');
+App.prototype.first = App.prototype.async = mounter('async');
+App.prototype.get = App.prototype.every = App.prototype.sync = mounter('sync');
 App.prototype.post = mounter('post');
 
 function handler(method) {
