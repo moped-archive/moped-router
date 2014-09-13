@@ -45,7 +45,11 @@ App.prototype.use = function (path, child) {
   if (specialCharacters !== '') {
     throw new Error('The path in `app.use` may not contain special characters, such as ' + specialCharacters);
   }
-  if (!child || typeof child._mount !== 'function' || typeof child.handleAsync !== 'function' || typeof child.handleSync !== 'function' || typeof child.handlePost !== 'function') {
+  if (!child || typeof child._mount !== 'function' ||
+      typeof child.handleInit !== 'function' ||
+      typeof child.handleNavigate !== 'function' ||
+      typeof child.handleRender !== 'function' ||
+      typeof child.handlePost !== 'function') {
     throw new TypeError('child to mount must be a moped-router');
   }
   child._mount(path, this);
@@ -67,9 +71,10 @@ function mounter(type) {
     this.handlers.push(new Route(type, path, handler));
   };
 }
-App.prototype.first = App.prototype.async = mounter('async');
-App.prototype.get = App.prototype.every = App.prototype.sync = mounter('sync');
-App.prototype.post = mounter('post');
+App.prototype.init = mounter('init');
+App.prototype.navigate = mounter('navigate');
+App.prototype.render = mounter('render');
+App.prototype.onPost = mounter('post');
 
 function handler(method) {
   return function (req) {
@@ -134,9 +139,10 @@ function matchBasePath(req, basepath) {
     return function noop() {};
   }
 }
-App.prototype.handleAsync = handler('handleAsync');
-App.prototype.handlePost = handler('handlePost');
-App.prototype.handleSync = function (req) {
+
+App.prototype.handleInit = handler('handleInit');
+App.prototype.handleNavigate = handler('handleNavigate');
+App.prototype.handleRender = function (req) {
   if (typeof req.path !== 'string') {
     throw new TypeError('req.path must be a string for moped-router to work');
   }
@@ -144,7 +150,7 @@ App.prototype.handleSync = function (req) {
   if (restore = matchBasePath(req, this.basepath)) {
     var result;
     for (var i = 0; i < this.handlers.length; i++) {
-      result = this.handlers[i].handleSync.apply(this.handlers[i], arguments);
+      result = this.handlers[i].handleRender.apply(this.handlers[i], arguments);
       if (result !== undefined) {
         restore();
         return result;
@@ -153,3 +159,5 @@ App.prototype.handleSync = function (req) {
     restore();
   }
 };
+
+App.prototype.handlePost = handler('handlePost');

@@ -2,11 +2,11 @@
   "name": "moped-router",
   "version": "0.0.4",
   "description": "Router for a moped application",
-  "keywords": [],
+  "keywords": ["moped", "router", "client side", "browserify"],
   "dependencies": {
     "asap": "^1.0.0",
     "path-to-regexp": "^0.2.3",
-    "promise": "^5.0.0"
+    "promise": "^6.0.0"
   },
   "devDependencies": {},
   "scripts": {

@@ -20,27 +20,32 @@ cars.js
 var MopedRouter = require('moped-router');
 var app = new MopedRouter();
 
-app.async('/:car', function (req) {
+app.init(function (req) {
+  return Promise.resolve(null).then(function () {
+    req.makes = {volvo: 'dull', ferrari: 'exciting'};
+  });
+});
+app.navigate('/:car', function (req) {
   // inside app.async, you can perform asynchronous operations
   // by returning a promise.
 
   return db.cars.findOne({_id: req.params.car}).then(function (car) {
     req.car = car;
+    req.car.description = req.makes[req.params.car];
   });
 });
-app.get('/:car', function (req) {
+app.render('/:car', function (req) {
   // inside app.get, you must always use synchronous code.
   // return `undefined` to delegate to another handler and `null` to indicate 404
 
   return JSON.stringify(req.car, null, '  ')
 });
 
-
 // handles posts to /cars/write-car where the body is a JSON array of
 // [id, update]
 // the first argument, `req` can be used for getting things like the
 // authenticated user
-app.post('/write-car', function (req, id, update) {
+app.onPost('/write-car', function (req, id, update) {
   return db.cars.update({_id: id}, update, {upsert: true});
 });
 
@@ -90,37 +95,45 @@ subapp.onMount(function (basepath, parent) {
 });
 ```
 
-### app.async(path?, handler) / app.first(path?, handler)
+### app.init(path?, handler)
 
-Registers an asynchronous handler (i.e. one that may return a promise).  This is only run when making "asynchronous" requests.  You can use these to initialize any state that is needed for the application to run.  Note that in moped these are called for every server request and just the first client request.
+Register a handler that is only triggerd on the first page load.  You can use these to initialize any state that is needed for the application to run.  Note that in moped these are called for every server request and just the first client request.
 
-This has two aliases that do the same thing, to help you express intent.
+The init handlers can return Promises, if they need to load data asynchronously.
 
-### app.get(path?, handler) / app.sync(path?, handler) / app.every(path?, handler)
+### app.navigate(path?, handler)
 
-Registers a synchronous handler.  This is where the bulk of your application happens.  These are run on every request, and are only allowed to be synchronous (to ensure react can re-render the view synchronously).
+Register a handler that is called every time navigation occurs.  You can use these to load additional data that may be required to render a new page.
 
-This has three aliases that do the same thing, to help you express intent.
+The navigate handlers can return Promises, if they need to load data asynchronously.
 
-### app.post(path? handler)
+### app.render(path?, handler)
 
-Registers a "post" handler.  This is just like `app.async` except that it is called by `app.handlePost(req, ...)`
+Register a handler that is called for every render.  These must be synchronous, so any asynchronous work must be done in navigate or init handlers.  If they were allowed to be asynchronous, you would not be able to use them propery to re-render react views.
 
-### app.handleAsync(request, ...)
+### app.onPost(path?, handler)
 
-Handle an asychronous request (note that any additional arguments are also passed to handlers).  This returns a promise for the result of calling each handler until one of them returns something other than undefined.
+Register a handler to be called on post requests.  These are useful for updates.  In moped, a `.post` api is added on both client and server that can be used as a system of remote procedure calls.
 
-### app.handleSync(request, ...)
+### app.handleInit(request, ...)
 
-Handle a sychronous request (note that any additional arguments are also passed to handlers).  This returns the result of calling each handler until one of them returns something other than undefined.
+Handle the initial request (note that any additional arguments are also passed to handlers).  This returns a promise for the result of calling each handler until one of them returns something other than undefined.
+
+### app.handleNavigate(request, ...)
+
+Handle a request as a result of client side navigation (note that any additional arguments are also passed to handlers).  This returns a promise for the result of calling each handler until one of them returns something other than undefined.
+
+### app.handleRender(request, ...)
+
+Handle a render that is not the result of a navigation (note that any additional arguments are also passed to handlers).  This returns the result of calling each handler until one of them returns something other than undefined.
 
 ### app.handlePost(request, ...)
 
-Handles a post request (asynchronously).  This is just like `app.handleAsync(request, ...)` except that it uses the `post` handlers.
+Handle an incomming post request on the server side.
 
 ## Moped Extensions / Changes
 
-Moped provides a `.run` method that behaves differently depending on whether it is on the client or the server.  It also overrides `.post` on the client so that it actually does the `.post` to the server.
+Moped provides a `.run` method that behaves differently depending on whether it is on the client or the server.  It also overrides `.post` on the client so that it actually does the `.post` to the server and `.post` on the server so that it just makes an internal request.
 
 ## License
 
