@@ -2,15 +2,26 @@
   "name": "moped-router",
   "version": "1.0.0",
   "description": "Router for a moped application",
-  "keywords": ["moped", "router", "client side", "browserify"],
+  "keywords": [
+    "moped",
+    "router",
+    "client side",
+    "browserify"
+  ],
   "dependencies": {
-    "asap": "^1.0.0",
-    "path-to-regexp": "^0.2.3",
-    "promise": "^6.0.0"
+    "clone": "^1.0.0",
+    "is-promise": "^2.0.0",
+    "path-to-regexp": "^1.0.3",
+    "promise": "^6.1.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "coveralls": "^2.11.2",
+    "istanbul": "^0.3.6"
+  },
   "scripts": {
-    "test": "node test"
+    "test": "node test",
+    "coverage": "istanbul cover test",
+    "coveralls": "npm run coverage && cat ./coverage/lcov.info | coveralls"
   },
   "repository": {
     "type": "git",
