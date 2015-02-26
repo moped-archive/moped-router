@@ -142,13 +142,13 @@ MopedRouter.prototype.handle = function (req) {
     Object.keys(before).forEach(function (key) {
       req[key] = before[key];
     });
-    req.onExitRouter && req.onExitRouter(basePath);
+    req.onExitRouter && req.onExitRouter(basePath, res !== undefined);
     return res;
   }.bind(this), function (err) {
     Object.keys(before).forEach(function (key) {
       req[key] = before[key];
     });
-    req.onExitRouter && req.onExitRouter(basePath);
+    req.onExitRouter && req.onExitRouter(basePath, true);
     throw err;
   }.bind(this));
 };
