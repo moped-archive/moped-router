@@ -93,12 +93,13 @@ MopedRouter.prototype.handle = function (req) {
     params: req.params
   };
   req.params = clone(req.params || {});
+  var basePath = '';
   if (this.mounted) {
     var match = this.baseExpression.exec(req.path);
     if (!match) {
       return Promise.resolve(undefined);
     }
-    this.basePath = match[0];
+    basePath = match[0];
     for (var i = 0; i < this.baseKeys.length; i++) {
       req.params[this.baseKeys[i].name] = match[i + 1];
     }
@@ -109,6 +110,7 @@ MopedRouter.prototype.handle = function (req) {
       assert(req.path[0] === '/', 'Expected path to start with a "/"');
     }
   }
+  req.onEnterRouter && req.onEnterRouter(basePath);
   var handlers = this.handlers;
   return new Promise(function (resolve, reject) {
     var i = 0;
@@ -140,11 +142,13 @@ MopedRouter.prototype.handle = function (req) {
     Object.keys(before).forEach(function (key) {
       req[key] = before[key];
     });
+    req.onExitRouter && req.onExitRouter(basePath);
     return res;
-  }, function (err) {
+  }.bind(this), function (err) {
     Object.keys(before).forEach(function (key) {
       req[key] = before[key];
     });
+    req.onExitRouter && req.onExitRouter(basePath);
     throw err;
-  });
+  }.bind(this));
 };

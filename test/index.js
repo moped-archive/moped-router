@@ -57,6 +57,9 @@ barApp.get('/bar/:bar', function (req) {
 barApp.get('/bar/:bar/with-url', function (req) {
   return req.url;
 });
+barApp.get('/bar/:bar/base-path', function (req) {
+  return req.basePath;
+});
 app.use('/part/:part/', barApp);
 
 assert.throws(function () {
@@ -111,7 +114,7 @@ rejected(
   )
 }).then(function () {
   return rejected(
-    app.handle({method: 'put', path: '/error-sync'}),
+    app.handle({method: 'put', path: '/error-sync', onExitRouter: function () {}}),
     Error,
     'sync-error'
   )
@@ -147,4 +150,16 @@ rejected(
   return app.handle({method: 'put', path: '/blah/blah'});
 }).then(function (res) {
   assert(res === 404);
+  return app.handle({
+    method: 'get', path: '/part/10/bar/32/base-path',
+    basePath: '',
+    onEnterRouter: function (basePath) {
+      this.basePath += basePath;
+    },
+    onExitRouter: function (basePath) {
+      this.basePath = this.basePath.substr(0, this.basePath.length - basePath.length);
+    }
+  });
+}).then(function (res) {
+  assert(res === '/part/10');
 }).done();
