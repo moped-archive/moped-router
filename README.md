@@ -64,7 +64,7 @@ Handle a request and get a promise for the results
 
 ## Moped Extensions / Changes
 
-Moped provides a `.run` method that behaves differently depending on whether it is on the client or the server.
+Moped provides a `.run` method that behaves differently depending on whether it is on the client or the server.  It also passes in `req` and `res` with some helpful methods and properties.
 
 ## License
 

@@ -139,16 +139,12 @@ MopedRouter.prototype.handle = function (req) {
     }
     next();
   }).then(function (res) {
-    Object.keys(before).forEach(function (key) {
-      req[key] = before[key];
-    });
-    req.onExitRouter && req.onExitRouter(basePath, res !== undefined);
+    if (res === undefined) {
+      Object.keys(before).forEach(function (key) {
+        req[key] = before[key];
+      });
+      req.onExitRouter && req.onExitRouter(basePath);
+    }
     return res;
-  }.bind(this), function (err) {
-    Object.keys(before).forEach(function (key) {
-      req[key] = before[key];
-    });
-    req.onExitRouter && req.onExitRouter(basePath, true);
-    throw err;
-  }.bind(this));
+  });
 };

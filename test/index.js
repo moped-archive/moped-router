@@ -30,6 +30,11 @@ assert.throws(function () {
   app.get('/', 10);
 }, TypeError, 'Expected the handlers to be functions but got number');
 
+app.all('*', function (req, res) {
+});
+app.all('*', function (req, res) {
+  return Promise.resolve(undefined);
+});
 app.get('/', function (req, res) {
   return 'foo';
 });
