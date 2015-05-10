@@ -41,7 +41,13 @@ MopedRouter.prototype.use = function (path, child) {
     throw new TypeError('child to mount must be a moped-router in MopedRouter.use');
   }
   child._mount(path, this);
-  this.handlers.push(child);
+  this.handlers.push(new NestedRouterHandler(child));
+};
+function NestedRouterHandler(child) {
+  this._child = child;
+}
+NestedRouterHandler.prototype.handle = function (req, args) {
+  this._child.handle.apply(this._child, [req].concat(args));
 };
 
 function mounter(type) {
@@ -66,6 +72,8 @@ methods.concat(['all']).forEach(function (method) {
 });
 
 MopedRouter.prototype.handle = function (req) {
+  console.log('handle:');
+  console.dir(arguments[1].constructor.name);
   if (typeof req.method !== 'string') {
     return Promise.reject(new TypeError('req.method must be a string for moped-router to work'));
   }
