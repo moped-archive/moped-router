@@ -3,7 +3,7 @@
 Router for a moped application
 
 [![Build Status](https://img.shields.io/travis/mopedjs/moped-router/master.svg)](https://travis-ci.org/mopedjs/moped-router)
-[![Dependency Status](https://img.shields.io/gemnasium/mopedjs/moped-router.svg)](https://gemnasium.com/mopedjs/moped-router)
+[![Dependency Status](https://img.shields.io/david/mopedjs/moped-router.svg)](https://david-dm.org/mopedjs/moped-router)
 [![NPM version](https://img.shields.io/npm/v/moped-router.svg)](https://www.npmjs.org/package/moped-router)
 
 ## Installation
